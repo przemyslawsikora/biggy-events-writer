@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: BiggyEventsWriter
+  jackson:
+    default-property-inclusion: non_null
+  kafka:
+    consumer:
+      group-id: BiggyEventsWriter
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+management:
+  info:
+    git:
+      mode: full

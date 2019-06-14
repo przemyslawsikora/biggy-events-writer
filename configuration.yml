@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongoadmin:mongo12345@localhost:27017/admin
+      database: data
+  kafka:
+    properties:
+      schema.registry.url: http://localhost:8085
+    consumer:
+      bootstrap-servers: localhost:9093
+      auto-offset-reset: earliest
+server:
+  port: 8080
