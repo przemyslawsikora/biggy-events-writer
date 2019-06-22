@@ -1,7 +1,7 @@
 # Biggy Events Writer
 
 Biggy Events Writer is the part of the Biggy system. Events Writer is responsible for reading events
-from Kafka events topic and store them into MongoDB.
+from Kafka events topic and store them into MongoDB and ElasticSearch.
 
 To build the application, build a Docker image and tag the image, type the following command:
 ```bash
