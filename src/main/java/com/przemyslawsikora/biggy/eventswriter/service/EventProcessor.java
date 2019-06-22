@@ -4,26 +4,29 @@
 
 package com.przemyslawsikora.biggy.eventswriter.service;
 
-import com.przemyslawsikora.biggy.eventswriter.dao.EventRepository;
-import com.przemyslawsikora.biggy.eventswriter.dao.model.Event;
+import com.przemyslawsikora.biggy.eventswriter.dao.elastic.EventElasticRepository;
+import com.przemyslawsikora.biggy.eventswriter.dao.mongo.EventMongoRepository;
 import com.przemyslawsikora.biggy.eventswriter.exception.UnsupportedDataSchema;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.util.Utf8;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-@Component
+@Service
 @Qualifier("com.przemyslawsikora.biggy.Event")
 public class EventProcessor implements RecordProcessor {
-    private EventRepository eventRepository;
+    private EventMongoConverter eventMongoConverter;
+    private EventMongoRepository eventMongoRepository;
+    private EventElasticRepository eventElasticRepository;
+    private EventElasticConverter eventElasticConverter;
 
-    public EventProcessor(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+    public EventProcessor(EventMongoConverter eventMongoConverter,
+                          EventMongoRepository eventMongoRepository,
+                          EventElasticRepository eventElasticRepository,
+                          EventElasticConverter eventElasticConverter) {
+        this.eventMongoConverter = eventMongoConverter;
+        this.eventMongoRepository = eventMongoRepository;
+        this.eventElasticRepository = eventElasticRepository;
+        this.eventElasticConverter = eventElasticConverter;
     }
 
     @Override
@@ -32,26 +35,7 @@ public class EventProcessor implements RecordProcessor {
             throw new UnsupportedDataSchema(String.format("Cannot process record Event from schema %s",
                     record.getSchema().getFullName()));
         }
-        if (record.getSchema().getProp("version").equals("1")) {
-            processVersion1(record);
-        } else {
-            throw new UnsupportedDataSchema(String.format("Processor of Event in version %s not found",
-                    record.getSchema().getProp("version")));
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void processVersion1(GenericRecord record) {
-        Event event = new Event();
-        event.setSchemaVersion("1");
-        event.setDate(new Date((Long) record.get("date")));
-        event.setDateOffset(ZoneOffset.of(record.get("dateOffset").toString()).getTotalSeconds() / 60);
-        if (record.get("attributes") != null) {
-            Map<String, Object> attributes = new HashMap<>();
-            ((Map<Utf8, Object>) record.get("attributes")).forEach((k, v) ->
-                    attributes.put(k.toString(), v instanceof Utf8 ? v.toString() : v));
-            event.setAttributes(attributes);
-        }
-        eventRepository.save(event);
+        eventMongoRepository.save(eventMongoConverter.convertFromEventRecord(record));
+        eventElasticRepository.save(eventElasticConverter.convertFromEventRecord(record));
     }
 }
