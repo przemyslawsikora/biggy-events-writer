@@ -1,13 +1,16 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb://mongoadmin:mongo12345@localhost:27017/admin
-      database: data
   kafka:
     properties:
       schema.registry.url: http://localhost:8085
     consumer:
       bootstrap-servers: localhost:9093
       auto-offset-reset: earliest
+  data:
+    mongodb:
+      uri: mongodb://mongoadmin:mongo12345@localhost:27017/admin
+      database: data
+    elasticsearch:
+      cluster-name: biggy-cluster
+      cluster-nodes: localhost:9300
 server:
   port: 8080

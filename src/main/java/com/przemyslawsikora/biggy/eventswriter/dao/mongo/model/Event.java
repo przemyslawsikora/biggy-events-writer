@@ -2,13 +2,12 @@
  * Copyright (C) 2019 Przemyslaw Sikora
  */
 
-package com.przemyslawsikora.biggy.eventswriter.dao.model;
+package com.przemyslawsikora.biggy.eventswriter.dao.mongo.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.Date;
 import java.util.Map;
 
 @Document(collection = "events")
@@ -19,11 +18,11 @@ public class Event {
     @Field("schemaVersion")
     private String schemaVersion;
 
-    @Field("date")
-    private Date date;
+    @Field("object")
+    private String object;
 
-    @Field("dateOffset")
-    private Integer dateOffset;
+    @Field("time")
+    private EventTime time;
 
     @Field("attributes")
     private Map<String, Object> attributes;
@@ -44,20 +43,20 @@ public class Event {
         this.schemaVersion = schemaVersion;
     }
 
-    public Date getDate() {
-        return date;
+    public String getObject() {
+        return object;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setObject(String object) {
+        this.object = object;
     }
 
-    public Integer getDateOffset() {
-        return dateOffset;
+    public EventTime getTime() {
+        return time;
     }
 
-    public void setDateOffset(Integer dateOffset) {
-        this.dateOffset = dateOffset;
+    public void setTime(EventTime time) {
+        this.time = time;
     }
 
     public Map<String, Object> getAttributes() {
